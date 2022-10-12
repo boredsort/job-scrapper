@@ -31,5 +31,6 @@ class BaseSpider(AbstractSpider):
                 return result
 
         except requests.exceptions.HTTPError:
-            pass
+            return {'error': "HTTP ERROR", "url": response.url }
 
+        raise Exception('Unhandled Exception')
