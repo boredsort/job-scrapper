@@ -1,5 +1,6 @@
 import requests
 import json
+import math
 
 from lib2to3.pytree import Base
 from bs4 import BeautifulSoup
@@ -9,7 +10,7 @@ from ..constants import NOT_FOUND, EXTRACTION_FAILED
 from items.list_job_item import ListJobItem
 
 
-class GlobeComSpider(BaseSpider):
+class GlobeComListSpider(BaseSpider):
 
     def __init__(self, params={}):
         super().__init__(params)
@@ -18,6 +19,40 @@ class GlobeComSpider(BaseSpider):
         self._list_total=0
 
     def crawl(self, urls):
+        try:
+
+            result = self._get_all_items()
+
+            result = { 
+                'raw': 'asdf',
+                'url':' response.url'
+            }
+
+            return result
+        except requests.exceptions.HTTPError:
+            return {'error': "HTTP ERROR", "url": '' }
+
+        raise Exception('Unhandled Exception')
+
+    def parse(self, result):
+
+        try:
+            _json = json.loads(result['raw'])
+        except:
+            pass
+            # should return something her
+
+        # the page total only is only found on the offset = 0 request. so store it on the variable
+
+        
+        # list_jobs = ListJobItem(result['url'], self.website)
+
+        # items = self._get_all_items(current_page)
+
+        # current_page
+
+    def _get_data_api(self):    
+
         try:
             headers = {
                 "Accept": "application/json",
@@ -34,49 +69,63 @@ class GlobeComSpider(BaseSpider):
                 "Sec-Fetch-Site":"same-origin",
                 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0",
             }
+
             offset= self._page * 20
 
             payload = {"appliedFacets":{},"limit":20,"offset":offset,"searchText":""}
 
             api_url = 'https://globe.wd3.myworkdayjobs.com/wday/cxs/globe/GLB_Careers/jobs'
             response = requests.post(api_url, headers=headers, data=json.dumps(payload))
-
             if response.status_code in [200, 201]:
-                response.encoding = 'utf-8'
-                result = { 
-                    'raw': response.text,
-                    'url': response.url
-                }
-
-                return result
-        except requests.exceptions.HTTPError:
-            return {'error': "HTTP ERROR", "url": response.url }
-
-        raise Exception('Unhandled Exception')
-
-    def parse(self, result):
-
-        try:
-            _json = json.loads(result['raw'])
+                return response
         except:
             pass
-            # should return something her
+        return None
+        
+    def _get_all_items(self):
 
-        # the page total only is only found on the offset = 0 request. so store it on the variable
         current_page = 0
-        list_total = result['raw']
-        if list_total:
-             self._list_total = list_total
-        
-        list_jobs = ListJobItem(result['url'], self.website)
+        init_url = ''
+        total_page = 0
 
-        items = self._get_all_items(current_page)
+        items = []
+        has_next = True
+        try:
+            while has_next:
+                response = self._get_data_api()
 
-        current_page
-        
-    def _get_all_items(self, current_page):
+                try:
+                    _json = json.loads(response.text)
+                    if _json:
+                        
+                        list_total = int(_json['total'])
+                        if list_total:
+                            self._list_total = list_total
 
-        pass
+                        job_postings = _json.get('jobPostings',[])
+                        if job_postings:
+                            items.extend(job_postings)
+                        else:
+                            break
+                except:
+                    break
+
+                if self._page == 0:
+                    total_page = math.ceil(self._list_total / 20)
+                    init_url = response.url
+
+                if total_page <= current_page:
+                    has_next = False
+
+                current_page+=1
+                self._page=current_page
+                
+
+        except:
+            pass
+
+        return {'result_items': items, 'url': init_url}
+
     # extract data here
     # https://globe.wd3.myworkdayjobs.com/wday/cxs/globe/GLB_Careers/jobs
     # use this as the body

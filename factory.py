@@ -5,7 +5,6 @@ import os
 import json
 import importlib
 
-
 class SpiderFactory(object):
 
     WEBSITE_MAP = 'list_map.json'
