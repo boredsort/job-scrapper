@@ -1,6 +1,7 @@
 import requests
 import json
 import math
+import html
 
 from lib2to3.pytree import Base
 from bs4 import BeautifulSoup
@@ -21,35 +22,49 @@ class GlobeComListSpider(BaseSpider):
     def crawl(self, urls):
         try:
 
-            result = self._get_all_items()
+            result = self._get_all_items()         
+            if result and 'result_items' in result and result['result_items']:
+                return self.parse(result)
 
-            result = { 
-                'raw': 'asdf',
-                'url':' response.url'
-            }
-
-            return result
         except requests.exceptions.HTTPError:
             return {'error': "HTTP ERROR", "url": '' }
 
-        raise Exception('Unhandled Exception')
+        except:
+            pass
+
+        return {}
 
     def parse(self, result):
 
+        def _clean(string):
+            return html.unescape(string).strip()
+
+        
+        list_jobs = ListJobItem(result['url'], self.website)
+
         try:
-            _json = json.loads(result['raw'])
+
+            for item in result['result_items']:
+
+                if 'title' not in item:
+                    continue
+
+                BASE_URL = 'https://globe.wd3.myworkdayjobs.com/en-US/GLB_Careers'
+                title = _clean(item['title'])
+                url = BASE_URL + _clean(item['externalPath'])
+                location = _clean(item['locationsText'])
+                list_jobs.append_job_list({
+                    "title": title,
+                    "url": url,
+                    "location": location
+                })
+                
+
         except:
             pass
             # should return something her
-
-        # the page total only is only found on the offset = 0 request. so store it on the variable
-
         
-        # list_jobs = ListJobItem(result['url'], self.website)
-
-        # items = self._get_all_items(current_page)
-
-        # current_page
+        return list_jobs
 
     def _get_data_api(self):    
 
