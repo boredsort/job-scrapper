@@ -1,0 +1,4 @@
+# for refactor
+
+    - Create a settings json or py
+    - settings should contain the date format, to standardize transform conversion

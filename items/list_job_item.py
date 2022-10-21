@@ -9,7 +9,7 @@ class ListJobItem:
         self.url = source_url
         self.joblist = []
     
-    def append_job_list(self, job):
+    def append_job_list(self, job: dict):
         if isinstance(job, dict):
             self.joblist.append(job)
         else:

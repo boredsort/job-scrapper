@@ -2,6 +2,8 @@ import requests
 import json
 import math
 import html
+import re
+from datetime import date, timedelta
 
 from lib2to3.pytree import Base
 from bs4 import BeautifulSoup
@@ -53,11 +55,16 @@ class GlobeComListSpider(BaseSpider):
                 title = _clean(item['title'])
                 url = BASE_URL + _clean(item['externalPath'])
                 location = _clean(item['locationsText'])
+                posted_on = self._transform_word_to_date(_clean(item['postedOn']))
                 list_jobs.append_job_list({
                     "title": title,
                     "url": url,
-                    "location": location
+                    "location": location,
+                    'extras': {
+                        "posted_on": posted_on
+                    }
                 })
+
                 
 
         except:
@@ -141,7 +148,16 @@ class GlobeComListSpider(BaseSpider):
 
         return {'result_items': items, 'url': init_url}
 
-    # extract data here
-    # https://globe.wd3.myworkdayjobs.com/wday/cxs/globe/GLB_Careers/jobs
-    # use this as the body
-    # {"appliedFacets":{},"limit":20,"offset":0,"searchText":""}
+    def _transform_word_to_date(self, value):
+
+        today = date.today()
+        post_date = today.strftime("%d/%m/%Y")
+        matches = re.search(r'(\d+)', value)
+        if matches:
+            days_ago = int(matches.group(1))
+            dif_date = today - timedelta(days=days_ago)
+            post_date = dif_date.strftime("%d/%m/%Y")
+
+        return post_date
+
+        
