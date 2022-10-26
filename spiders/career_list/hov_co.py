@@ -13,7 +13,6 @@ class HovCoListSpider(BaseSpider):
 
 
     def parse(self, result):
-        assert isinstance(result, dict)
 
         soup = BeautifulSoup(result['raw'], 'lxml')
         tags = self.get_job_tags(soup)
@@ -38,7 +37,7 @@ class HovCoListSpider(BaseSpider):
 
     
     def get_job_tags(self, soup):
-        tags = soup.select('#open-positions span + a')
+        # tags = soup.select('#open-positions span + a')
         tags = soup.select('#open-positions div.justify-between.items-center')
         if tags:
             return tags

@@ -5,11 +5,13 @@ from .abstract import AbstractSpider
 class BaseSpider(AbstractSpider):
 
     def __init__(self, params={}):
-        assert isinstance(params, dict)
+       
         self.params = params
         self.website = None
 
     def parse(self, result: dict):
+        # New class should implement and override this function.
+        # should return a list_jobs object
         return result
 
     def crawl(self, urls):

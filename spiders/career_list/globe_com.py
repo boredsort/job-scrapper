@@ -24,6 +24,7 @@ class GlobeComListSpider(BaseSpider):
     def crawl(self, urls):
         try:
 
+            # url is not used here as it can be scraped through API
             result = self._get_all_items()         
             if result and 'result_items' in result and result['result_items']:
                 return self.parse(result)

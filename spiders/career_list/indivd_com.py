@@ -5,12 +5,13 @@ from ..constants import NOT_FOUND, EXTRACTION_FAILED
 from items.list_job_item import ListJobItem
 
 
-class MeldcxComListSpider(BaseSpider):
+class IndivdComListSpider(BaseSpider):
 
     def __init__(self, params={}):
         super().__init__(params)
-        self.website = 'www.meldcx.com'
+        self.website = 'www.indivd.com'
 
+    
     def parse(self, result):
 
         soup = BeautifulSoup(result['raw'], 'lxml')
@@ -31,33 +32,21 @@ class MeldcxComListSpider(BaseSpider):
         
     def crawl(self, urls):
         result = super().crawl(urls)
-        
+
         return self.parse(result)
 
     def get_job_tags(self, soup):
-        tags = soup.select('.collection-item-content-wrapper')
+        tags = soup.select('ul.block-grid li')
         if tags:
             return tags
         return None
-
+        
     def get_title(self, job_tag):
         value = NOT_FOUND
         try:
-            if job_tag:
-                tag = job_tag.select_one('.card-item-title.job')
-                if tag:
-                    value = tag.get_text().strip()
-        except:
-            value = EXTRACTION_FAILED
-        return value
-
-    def get_location(self, job_tag):
-        value = NOT_FOUND
-        try:
-            if job_tag:
-                tag = job_tag.select_one('.location-text')
-                if tag:
-                    value = tag.get_text().strip()
+            tag = job_tag.select_one('a span.company-link-style')
+            if tag:
+                value = tag.text.strip()
         except:
             value = EXTRACTION_FAILED
         return value
@@ -65,12 +54,23 @@ class MeldcxComListSpider(BaseSpider):
     def get_url(self, job_tag):
         value = NOT_FOUND
         try:
-            if job_tag:
-                tag = job_tag.select_one('.link-wrapper.careers a')
-                if tag:
-                    value = tag['href']
+            tag = job_tag.select_one('a')
+            if tag and tag.has_attr('href'):
+                value = tag['href']
+        except:
+            value = EXTRACTION_FAILED
+        return value
+
+    def get_location(self, job_tag):
+        value = NOT_FOUND
+        try:
+            tag = job_tag.select_one('span.company-link-style + div.mt-1.text-md')
+            if tag:
+                value = tag.text.strip()
         except:
             value = EXTRACTION_FAILED
         return value
 
     
+    # TODO: scrape data here
+    # https://career.indivd.com/jobs
