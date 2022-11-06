@@ -13,7 +13,7 @@ from ..constants import NOT_FOUND, EXTRACTION_FAILED
 from items.list_job_item import ListJobItem
 
 
-class GlobeComListSpider(BaseSpider):
+class GlobeComPhListSpider(BaseSpider):
 
     def __init__(self, params={}):
         super().__init__(params)
