@@ -17,7 +17,7 @@ class GlobeComListSpider(BaseSpider):
 
     def __init__(self, params={}):
         super().__init__(params)
-        self.website = 'www.globe.com'
+        self.website = 'www.globe.com.ph'
         self._page=0
         self._list_total=0
 
