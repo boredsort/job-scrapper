@@ -39,7 +39,7 @@ class SpiderFactory(object):
         try:
             website = website.lower()
             file_name = self.career_spiders[website]
-            module_path = f'spiders.{self.__class__.CAREER_LIST_DIR}.{file_name}'
+            module_path = f'job_scrapper.spiders.{self.__class__.CAREER_LIST_DIR}.{file_name}'
             module = importlib.import_module(module_path)
             class_name = f'{self._get_class_name(file_name)}ListSpider'
             return getattr(module, class_name)

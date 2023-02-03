@@ -1,13 +1,16 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+import cloudscraper
 
 from ..base import BaseSpider
 from ..constants import NOT_FOUND, EXTRACTION_FAILED
 from items.list_job_item import ListJobItem
 
 
-class Epldt_ComListSpider(BaseSpider):
+class EpldtComListSpider(BaseSpider):
 
     def __init__(self, params={}):
         super().__init__(params)
@@ -29,7 +32,17 @@ class Epldt_ComListSpider(BaseSpider):
                 "Sec-Fetch-Mode": "navigate",
                 "Sec-Fetch-Site": "cross-site"
             }
-            response = requests.get(urls, headers=headers)
+
+            # session = requests.Session()
+            # retry = Retry(connect=3, backoff_factor=0.5)
+            # adapter = HTTPAdapter(max_retries=retry)
+            # session.mount('http://', adapter)
+            # session.mount('https://', adapter)
+
+            # cookies = self.get_cookies()
+            scraper = cloudscraper.create_scraper()
+
+            response = scraper.get(urls, headers=headers)
             if response.status_code in [200, 201]:
                 soup = BeautifulSoup(response.text, 'lxml')
                 security = self.get_security_code(soup)
@@ -42,6 +55,14 @@ class Epldt_ComListSpider(BaseSpider):
             pass
 
         return {}
+
+    def get_cookies(self):
+        url = 'https://www.epldt.com'
+
+        response = requests.get(url)
+        if response:
+            pass
+
     def parse(self, result):
 
         return self.parse(result)
