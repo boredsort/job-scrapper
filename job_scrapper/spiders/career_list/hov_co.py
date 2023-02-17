@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 
 from ..base import BaseSpider
 from ..constants import NOT_FOUND, EXTRACTION_FAILED
-from items.list_job_item import ListJobItem
+from job_scrapper.items.list_job_item import ListJobItem
 
 
 class HovCoListSpider(BaseSpider):

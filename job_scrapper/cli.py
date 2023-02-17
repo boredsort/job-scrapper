@@ -3,8 +3,9 @@ import pymongo
 from typing import List
 
 
-def crawl_site(website):
-    pass
+def crawl_site(website) -> bool:
+    success = create_task(website)
+    return success
 
 def crawl_sites(websites: List):
 
@@ -18,8 +19,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.Output:
-        print('testonly %' % args.Output)
+    if args.site:
+        print('testonly %' % args.site)
 
 
 if __name__ == "__main__":
