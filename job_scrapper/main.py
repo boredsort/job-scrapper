@@ -22,7 +22,7 @@ def execute():
     # print(result)
 
     # should check environmental variables if present
-
+    pass
 if __name__== "__main__":
     
     print('Initiliazing spider')
