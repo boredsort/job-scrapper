@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 
 from ..base import BaseSpider
 from ..constants import NOT_FOUND, EXTRACTION_FAILED
-from job_scrapper.items.list_job_item import ListJobItem
+from items.list_job_item import ListJobItem
 
 
 class HovCoListSpider(BaseSpider):
@@ -19,15 +19,16 @@ class HovCoListSpider(BaseSpider):
 
         list_jobs = ListJobItem(result['url'], self.website)
 
-        for tag in tags:
-            job_title = self.get_title(tag)
-            url = self.get_url(tag)
-            location = self.get_location(tag)
-            list_jobs.append_job_list({
-                "title": job_title,
-                "url": url,
-                "location": location
-            })
+        if tags:
+            for tag in tags:
+                job_title = self.get_title(tag)
+                url = self.get_url(tag)
+                location = self.get_location(tag)
+                list_jobs.append_job_list({
+                    "title": job_title,
+                    "url": url,
+                    "location": location
+                })
         return list_jobs
         
     def crawl(self, urls):
@@ -38,7 +39,7 @@ class HovCoListSpider(BaseSpider):
     
     def get_job_tags(self, soup):
         # tags = soup.select('#open-positions span + a')
-        tags = soup.select('#open-positions div.justify-between.items-center')
+        tags = soup.select('#open-positions div.justify-between.items-center') or soup.select('#open-positions div.text-gray-150.mt-12')
         if tags:
             return tags
         return None

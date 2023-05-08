@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 from ..base import BaseSpider
 from ..constants import NOT_FOUND, EXTRACTION_FAILED
-from job_scrapper.items.list_job_item import ListJobItem
+from items.list_job_item import ListJobItem
 
 
 class GlobeComPhListSpider(BaseSpider):
