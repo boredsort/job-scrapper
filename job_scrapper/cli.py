@@ -1,5 +1,6 @@
 import argparse
 import threading
+import datetime
 from typing import List
 
 from connection.sites_client import SitesClient
@@ -30,22 +31,29 @@ def crawl_sites(websites: List):
         task_id = task['task_id']
         site_id = connection.get_site_id(task_id)
         target = connection.get_site_by_id(site_id)
-        target_sites.append(target)
+        target_sites.append((target, task))
 
 
-    for target_site in target_sites:
+    for target_site, _task in target_sites:
 
         website = target_site.get('url')
         career_page = target_site.get('careers_url')
         url = f'https://{career_page}'
         factory = SpiderFactory()
         spider = factory.spawn_listSpider(website)()
+        # future idea, task should be a class, and should have task function
+        start_time = datetime.datetime.utcnow()
         result = spider.crawl(url)
         
-        mongo_client.save_scraped(result.convert_to_collection())
-        # get the strategyy here from the spider factory
-        # then start scraping
-        # save the scape results to db
+        success, error_msg = mongo_client.save_scraped(result.convert_to_collection())
+        finished_time = datetime.datetime.utcnow()
+        connection.update_task(_task['task_id'],
+            started_date=start_time,
+            finished_date=finished_time,
+            error_message=error_msg
+        )
+        # update task if finised
+        # update also errors
         
 
     success = True

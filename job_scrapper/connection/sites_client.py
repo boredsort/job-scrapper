@@ -91,6 +91,37 @@ class SitesClient:
         except:
             pass
         return tasks
+    
+    def update_task(self, task_id, **kwargs):
+        started_date = None
+        finished_date = None
+        error_msg = None
+
+        values = {}
+
+        try:
+            if kwargs: 
+                started_date = kwargs.get('started_date')
+                finished_date = kwargs.get('finished_date')
+                error_msg = kwargs.get('error_message')
+
+                if started_date:
+                    values.update({'started_date': started_date})
+                if finished_date:
+                    values.update({'finished_date': finished_date})
+                if error_msg:
+                    values.update({'error_message': error_msg})
+
+            
+            doc = self._collection.find_one_and_update({'task_id': task_id},
+                                                        {'$inc': values})
+            if doc:
+                return True
+
+        except:
+            pass
+        return None
+
 
     def get_site_by_id(self, site_id):
 

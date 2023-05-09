@@ -43,8 +43,8 @@ def save_scraped(job_item):
     try:
         col = get_collection()
         col.insert_one(job_item)
-        return True
+        return True, None
     except Exception as e:
         print(e)
-        return False
+        return False, e
     
