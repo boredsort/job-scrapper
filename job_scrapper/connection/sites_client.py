@@ -43,6 +43,7 @@ class SitesClient:
                 task_id = self.create_task_id(item.get('site_id'))
                 task = {
                     "task_id": task_id,
+                    "doc_id": None,
                     "started_date": None,
                     "finished_date": None,
                     "error_message": None
@@ -96,7 +97,7 @@ class SitesClient:
         started_date = None
         finished_date = None
         error_msg = None
-
+        document_id = None
         values = {}
 
         try:
@@ -104,17 +105,21 @@ class SitesClient:
                 started_date = kwargs.get('started_date')
                 finished_date = kwargs.get('finished_date')
                 error_msg = kwargs.get('error_message')
+                document_id = kwargs.get('document_id')
 
                 if started_date:
                     values.update({'started_date': started_date})
                 if finished_date:
                     values.update({'finished_date': finished_date})
+                if document_id:
+                    values.update({'doc_id': document_id})
                 if error_msg:
                     values.update({'error_message': error_msg})
 
-            
-            doc = self._collection.find_one_and_update({'task_id': task_id},
-                                                        {'$inc': values})
+            task_con = self._db['task']
+
+            doc = task_con.find_one_and_update({'task_id': task_id},
+                                                        {'$set': values})
             if doc:
                 return True
 

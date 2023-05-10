@@ -45,12 +45,13 @@ def crawl_sites(websites: List):
         start_time = datetime.datetime.utcnow()
         result = spider.crawl(url)
         
-        success, error_msg = mongo_client.save_scraped(result.convert_to_collection())
+        document_id, error_msg = mongo_client.save_scraped(result.convert_to_collection())
         finished_time = datetime.datetime.utcnow()
         connection.update_task(_task['task_id'],
             started_date=start_time,
             finished_date=finished_time,
-            error_message=error_msg
+            error_message=error_msg,
+            document_id=document_id
         )
         # update task if finised
         # update also errors

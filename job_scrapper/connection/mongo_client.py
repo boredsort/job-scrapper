@@ -42,9 +42,9 @@ def get_collection():
 def save_scraped(job_item):
     try:
         col = get_collection()
-        col.insert_one(job_item)
-        return True, None
+        res = col.insert_one(job_item)
+        return res.inserted_id.__str__(), None
     except Exception as e:
         print(e)
-        return False, e
+        return None, e.__str__()
     
