@@ -119,7 +119,7 @@ class SitesClient:
             task_con = self._db['task']
 
             doc = task_con.find_one_and_update({'task_id': task_id},
-                                                        {'$set': values})
+                                                {'$set': values})
             if doc:
                 return True
 

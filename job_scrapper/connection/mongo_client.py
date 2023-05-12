@@ -1,5 +1,6 @@
 import os
 import pymongo
+import traceback
 
 from dotenv import load_dotenv
 
@@ -21,21 +22,21 @@ _collection = None
 
 def get_client():
     global _client
-    if not _client:
+    if _client is None:
         _client = pymongo.MongoClient(url)
     return _client
 
 
 def get_db():
     global _db
-    if not _db:
+    if _db is None:
         _db = get_client()['dbjobscraper']
 
     return _db
 
 def get_collection():
     global _collection
-    if not _collection:
+    if _collection is None:
         _collection = get_db()['scrape_data']
     return _collection
 
@@ -46,5 +47,5 @@ def save_scraped(job_item):
         return res.inserted_id.__str__(), None
     except Exception as e:
         print(e)
-        return None, e.__str__()
+        return None, traceback.format_exc()
     
