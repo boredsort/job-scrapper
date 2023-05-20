@@ -36,8 +36,8 @@ def crawl_sites(websites: List):
 
     for target_site, _task in target_sites:
 
-        website = target_site.get('url')
-        career_page = target_site.get('careers_url')
+        website = target_site.get('website')
+        career_page = target_site.get('career_url')
         url = f'https://{career_page}'
         factory = SpiderFactory()
         spider = factory.spawn_listSpider(website)()
